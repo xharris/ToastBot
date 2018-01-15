@@ -3,6 +3,7 @@ import asyncio
 from discord.ext.commands import Bot
 from discord.ext import commands
 import platform, os, json
+from configparser import SafeConfigParser
 
 from command import Command
 from song import Song
@@ -64,6 +65,13 @@ class MusicBot(discord.Client):
 		cmd = Command(message)
 		if cmd.is_valid:
 			await cmd.map(self.commands)
+
+	def run(self, cfg_path):
+		parser = SafeConfigParser()
+		parser.read(cfg_path)
+		token_id = parser.get('config', 'token_id')
+
+		super().run(token_id)
 
 	def loadSongData(self):
 		if not os.path.exists('songs'):
