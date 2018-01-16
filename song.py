@@ -1,4 +1,4 @@
-import discord, os, subprocess, asyncio, re, threading
+import discord, os, subprocess, asyncio, re, threading, hashlib
 
 class Song():
 	def __init__(self, client, in_type, in_path, fn_after):
@@ -7,6 +7,11 @@ class Song():
 		self.name = ''
 		self.fn_after = fn_after
 		self.is_ready = False
+		self.hash = Song.getUUID(in_path)
+
+		# check if song is in autoplay list
+		if not self.hash in self.client.song_data:
+			self.client.song_data[self.hash] = self.path
 
 		if self.type == 'local':
 			self.name = os.path.splitext(os.path.basename(self.path))[0].replace('_',' ')
@@ -25,6 +30,9 @@ class Song():
 
 		self.client = client
 
+	def getUUID(path):
+		return str(hashlib.md5(path))
+
 	async def play(self):
 		print('playing {} ({}s)'.format(self.name, self.duration))
 
@@ -37,6 +45,9 @@ class Song():
 		await asyncio.sleep(self.duration)
 		if self.fn_after:
 			await self.fn_after()
+
+	def getUUID(self):
+		return self.uuid
 
 	def isPlaying(self):
 		return self.player.is_playing() or not self.player.is_done()

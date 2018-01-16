@@ -48,7 +48,6 @@ class MusicBot(discord.Client):
 				}
 			}
 		'''
-		self.loadSongData()
 
 	async def on_ready(self):
 		print('Logged in as '+self.user.name+' (ID:'+self.user.id+') | Connected to '+str(len(self.servers))+' servers | Connected to '+str(len(set(self.get_all_members())))+' users')
@@ -127,6 +126,8 @@ class MusicBot(discord.Client):
 		await self.send_message(msg.channel, 'Fuck u')
 
 	async def cmd_join(self, msg, args):
+		self.loadSongData()
+
 		# get channel of user summoning the bot
 		auth_voice_state = msg.author.voice
 		if not auth_voice_state.is_afk:
@@ -139,6 +140,7 @@ class MusicBot(discord.Client):
 		await self.send_message(msg.channel, 'bye')	
 
 	async def cmd_shutdown(self, msg, args):
+		self.saveSongData()
 		await self.close()
 		# next part wont run lol
 		await self.send_message(msg.channel, 'you can\'t kill me that easily{}!'.format(' ha ha'*easily))
